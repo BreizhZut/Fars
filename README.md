@@ -35,6 +35,21 @@ file.path(fars_dir,"accident_2013.csv.bz2")
     ## [1] "../data/accident_2013.csv.bz2"
 
 ``` r
+library(dplyr)
+```
+
+    ## 
+    ## Attaching package: 'dplyr'
+
+    ## The following objects are masked from 'package:stats':
+    ## 
+    ##     filter, lag
+
+    ## The following objects are masked from 'package:base':
+    ## 
+    ##     intersect, setdiff, setequal, union
+
+``` r
 library(fars)
 ```
 

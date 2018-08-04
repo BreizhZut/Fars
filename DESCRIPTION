@@ -3,7 +3,7 @@ Title: Read and analyse the  Fatality Analysis Reporting System data
 Version: 0.0.0.9000
 Authors@R: person("Dylan", "Tweed", email = "dylan.tweed@googlemail.com", role = c("aut", "cre"))
 Description: Contains multiple useful function needed for handling this multiple file dataset. 
-Depends: R (>= 3.5.1-0)
+Depends: R (>= 3.5.0)
 License: GPL
 Encoding: UTF-8
 LazyData: true
@@ -11,4 +11,9 @@ RoxygenNote: 6.0.1
 Suggests: knitr,
     rmarkdown
 VignetteBuilder: knitr
-Imports: dplyr, maps, readr, tidyr
+Imports: 
+    dplyr,
+    magrittr,
+    maps, 
+    readr, 
+    tidyr
