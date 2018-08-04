@@ -158,7 +158,7 @@ fars_read_years <- function(years,path="data") {
 #'
 #' @export
 fars_summarize_years <- function(years,path="data") {
-        dat_list <- fars_read_years(years,path) %>%
+        dat_list <- fars_read_years(years,path)
         dplyr::bind_rows(dat_list) %>%
             dplyr::group_by(year, MONTH) %>%
             dplyr::summarize(n = dplyr::n()) %>%
