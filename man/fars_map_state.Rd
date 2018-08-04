@@ -4,12 +4,14 @@
 \alias{fars_map_state}
 \title{Map the accident for a specific year accross a state}
 \usage{
-fars_map_state(state.num, year)
+fars_map_state(state.num, year,path)
 }
 \arguments{
 \item{state.num}{number identifying a statse in US character, integer or  numeric}
 
 \item{year}{4 digit year character, integer or  numeric}
+
+\item{path}{directory containing the Fars data set to "data" by default}
 }
 \value{
 a map object

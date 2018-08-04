@@ -4,21 +4,23 @@
 \alias{fars_summarize_years}
 \title{Count the number of accidents per month}
 \usage{
-fars_summarize_years(years)
+fars_summarize_years(years, path)
 }
 \arguments{
 \item{years}{a list of values corresponding to year}
+
+\item{path}{directory containing the Fars data set to "data" by default}
 }
 \value{
 a data frame table with columns
 \itemize{
 \item \code{month} : month number
-\item \code{year} : four digit year 
+\item \code{year} : four digit year
 \item \code{n} : the number of corresponding rows in the dataset interpreted as the number of accidents
 }
 }
 \description{
-Using a list of years as input, this function reads the collect the available data in the 
+Using a list of years as input, this function reads the collect the available data in the
 Fatality Analysis Reporting System dataset. It then counts the number of accident per month.
 }
 \details{

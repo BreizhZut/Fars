@@ -2,19 +2,9 @@
 output: github_document
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+# Fars Package
 
-```{r, echo = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.path = "README-"
-)
-```
-
-# fars
-
-The goal of fars is to ...
+The goal of fars is the data from the US National Highway Traffic Safety Administration's [Fatality Analysis Reporting System](https://www.nhtsa.gov/Data/Fatality-Analysis-Reporting-System-(FARS)), which is a nationwide census providing the American public yearly data regarding fatal injuries suffered in motor vehicle traffic crashes. 
 
 ## Installation
 
@@ -27,8 +17,28 @@ devtools::install_github("BreizhZut/Fars")
 
 ## Example
 
-This is a basic example which shows you how to solve a common problem:
+In oder to work properly one need to check the data location.
 
-```{r example}
-## basic example code
+```{r setdir}
+fars_dir = file.path("..","data")
+list.files(fars_dir)
+```
+
+File names are regenerated with a simple method
+
+```{r }
+file.path(fars_dir,"accident_2013.csv.bz2")
+```
+
+```{r filename}
+library(fars)
+file2013 <- make_filename(2013,path=fars_dir)
+file2013
+```
+
+And then loaded
+
+```{r data}
+data2013 <- fars_read(file2013)
+head(data2013)
 ```

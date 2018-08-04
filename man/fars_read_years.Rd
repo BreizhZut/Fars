@@ -4,10 +4,12 @@
 \alias{fars_read_years}
 \title{Read years from a list of Fatality Analysis Reporting System}
 \usage{
-fars_read_years(years)
+fars_read_years(years,path)
 }
 \arguments{
 \item{years}{a list of values corresponding to year}
+
+\item{path}{directory containing the Fars data set to "data" by default}
 }
 \value{
 a list of dat frame tbl with MONTH and year columns
@@ -18,7 +20,7 @@ filtered by the year as written in the file name.
 }
 \note{
 \itemize{
-\item file names are generated with the \code{make_filename} function 
+\item file names are generated with the \code{make_filename} function
 \item require to be run from the directory containing the data
 \item each list element may contain duplicated month year tuple
 }

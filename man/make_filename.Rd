@@ -4,10 +4,12 @@
 \alias{make_filename}
 \title{Build accident files names}
 \usage{
-make_filename(year)
+make_filename(year,path)
 }
 \arguments{
 \item{year}{year selected for the dataset, can be numeric, integer or charactor}
+
+\item{path}{directory containing the Fars data set to "data" by default}
 }
 \value{
 character string corresponding to a formatted file name
