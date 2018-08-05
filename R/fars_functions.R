@@ -3,9 +3,10 @@
 #' Reads a dataset from the US National Highway Traffic Safety Administration's Fatality Analysis Reporting System,
 #' which is a nationwide census providing the American public yearly data regarding fatal injuries suffered in motor vehicle traffic crashes.
 #'
-#' @usage fars_read(filename)
+#' @usage fars_read(filename,fars_path)
 #'
 #' @param filename character string corresponding to the path of the file
+#' @param fars_path charcter string correspondinf to the directory contianing the fars data
 #'
 #' @return data frame tbl
 #'
@@ -21,11 +22,13 @@
 #' }
 #'
 #' @export
-fars_read <- function(filename) {
-        if(!file.exists(filename))
-                stop("file '", filename, "' does not exist")
+fars_read <- function(filename,fars_path=".") {
+        fullfilename <- file.path(fars_path,filename)
+        if(!file.exists(fullfilename)){
+            stop("file '", fullfilename, "' does not exist")
+        }
         data <- suppressMessages({
-                readr::read_csv(filename, progress = FALSE)
+                readr::read_csv(fullfilename, progress = FALSE)
         })
         dplyr::tbl_df(data)
 }
@@ -34,10 +37,9 @@ fars_read <- function(filename) {
 #'
 #' Create a charactor string from the year matching the Fatality Analysis Reporting System naming convention
 #'
-#' @usage make_filename(year,path)
+#' @usage make_filename(year)
 #'
 #' @param year year selected for the dataset, can be numeric, integer or charactor
-#' @param path directory containing the Fars data set to "data" by default
 #'
 #' @return character string corresponding to a formatted file name
 #'
@@ -52,12 +54,15 @@ fars_read <- function(filename) {
 #' filename <- make_filename(2013)
 #' filename <- make_filename(2013L)
 #' filename <- make_filename("2013")
-#' filepath <- file.path("data",make_filename(2013))
 #'
 #' @export
-make_filename <- function(year,path="data") {
-        year <- as.integer(year)
-        file.path(path,sprintf("accident_%d.csv.bz2", year))
+make_filename <- function(year) {
+        if(grepl("^[0-9]{4}$",as.character(year))){
+            sprintf("accident_%d.csv.bz2", as.integer(year))
+        } else {
+            warning("invalid year: ", year)
+            return(NULL)
+        }
 }
 
 
@@ -66,10 +71,10 @@ make_filename <- function(year,path="data") {
 #' This function generates lists of a projection of the data along the column month and year.
 #' filtered by the year as written in the file name.
 #'
-#' @usage fars_read_years(years,path)
+#' @usage fars_read_years(years,fars_path)
 #'
 #' @param years a list of values corresponding to year
-#' @param path directory containing the Fars data set to "data" by default
+#' @param fars_path charcter string correspondinf to the directory containing the fars data
 #'
 #' @return a list of dat frame tbl with MONTH and year columns
 #'
@@ -99,15 +104,19 @@ make_filename <- function(year,path="data") {
 #' @seealso make_filename
 #'
 #' @export
-fars_read_years <- function(years,path="data") {
+fars_read_years <- function(years,fars_path=".") {
         lapply(years, function(year) {
-                file <- make_filename(year,path)
+                file <- make_filename(year)
+                if(is.null(file)){
+                    warning("Invalid year: ", year)
+                    return(NULL)
+                    }
                 tryCatch({
-                        dat <- fars_read(file)
+                        dat <- fars_read(file,fars_path=fars_path)
                         dplyr::mutate(dat, year = year) %>%
-                                dplyr::select('MONTH', year)
+                            dplyr::select("MONTH", "year")
                 }, error = function(e) {
-                        warning("invalid year: ", year)
+                        warning("missing file: ", file)
                         return(NULL)
                 })
         })
@@ -118,10 +127,11 @@ fars_read_years <- function(years,path="data") {
 #' Using a list of years as input, this function reads the collect the available data in the
 #' Fatality Analysis Reporting System dataset. It then counts the number of accident per month.
 #'
-#' @usage fars_summarize_years(years, path)
+#' @usage fars_summarize_years(years,fars_path)
 #'
 #' @param years a list of values corresponding to year
-#' @param path directory containing the Fars data set to "data" by default
+#' @param fars_path charcter string correspondinf to the directory containing the fars data
+#'
 #' @return a data frame table with columns
 #' \itemize{
 #' \item \code{month} : month number
@@ -157,10 +167,13 @@ fars_read_years <- function(years,path="data") {
 #' @seealso fars_read_years
 #'
 #' @export
-fars_summarize_years <- function(years,path="data") {
-        dat_list <- fars_read_years(years,path)
-        dplyr::bind_rows(dat_list) %>%
-            dplyr::group_by(year, MONTH) %>%
+fars_summarize_years <- function(years,fars_path=".") {
+        dat_list <- fars_read_years(years,fars_path=fars_path) %>% dplyr::bind_rows()
+        month <- NULL
+        year  <- NULL
+        dat_list %>%
+            dplyr::select(month="MONTH",year="year") %>%
+            dplyr::group_by(year, month) %>%
             dplyr::summarize(n = dplyr::n()) %>%
             tidyr::spread('year', 'n')
 }
@@ -170,15 +183,15 @@ fars_summarize_years <- function(years,path="data") {
 #' Match a state number and year to the Fatality Analysis Reporting System dataset.
 #' And produce a scatter plot of incident within a map af the state
 #'
-#' @usage fars_map_state(state.num, year,path)
+#' @usage fars_map_state(state.num, year,fars_path)
 #'
 #' @param state.num number identifying a statse in US character, integer or  numeric
 #' @param year 4 digit year character, integer or  numeric
-#' @param path directory containing the Fars data set to "data" by default
+#' @param fars_path charcter string correspondinf to the directory contianing the fars data
 #'
 #' @return a map object
 #'
-#' @importFrom dplyr filter
+#' @importFrom dplyr filter select
 #' @importFrom maps map
 #' @importFrom graphics points
 #'
@@ -199,23 +212,24 @@ fars_summarize_years <- function(years,path="data") {
 #' @seealso fars_read
 #'
 #' @export
-fars_map_state <- function(state.num, year,path=path) {
-        filename <- make_filename(year,path)
-        data <- fars_read(filename)
+fars_map_state <- function(state.num, year,fars_path=".") {
+        filename <- make_filename(year)
+        data <- fars_read(filename,fars_path=fars_path)
         state.num <- as.integer(state.num)
 
         if(!(state.num %in% unique(data$STATE)))
-                stop("invalid STATE number: ", state.num)
-        data.sub <- dplyr::filter(data, 'STATE' == state.num)
+            stop("invalid STATE number: ", state.num)
+        STATE <- NULL
+        data.sub <- dplyr::filter(data, STATE == state.num)
         if(nrow(data.sub) == 0L) {
-                message("no accidents to plot")
-                return(invisible(NULL))
+            message("no accidents to plot")
+            return(invisible(NULL))
         }
         is.na(data.sub$LONGITUD) <- data.sub$LONGITUD > 900
         is.na(data.sub$LATITUDE) <- data.sub$LATITUDE > 90
         with(data.sub, {
-                maps::map("state", ylim = range(LATITUDE, na.rm = TRUE),
-                          xlim = range(LONGITUD, na.rm = TRUE))
-                graphics::points(LONGITUD, LATITUDE, pch = 46)
+            maps::map("state", ylim = range(LATITUDE, na.rm = TRUE),
+                      xlim = range(LONGITUD, na.rm = TRUE))
+            graphics::points(LONGITUD, LATITUDE, pch = 46)
         })
 }

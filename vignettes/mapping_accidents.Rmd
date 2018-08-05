@@ -1,0 +1,69 @@
+---
+title: "Displaying FARS location for a state"
+author: "D. Tweed"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Displaying FARS location for a state}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Problem
+
+Display the location of accidents for a specific year and state
+
+First let set up the directory contianing he file
+
+```{r setdir}
+fars_dir = file.path("..","tests","data")
+list.files(fars_dir)
+```
+
+
+## Fars package implementations
+
+Loading dependancies
+
+```{r depen_lib, message=FALSE}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(magrittr)
+library(maps)
+library(knitr)
+```
+
+Loading the library
+
+```{r lib, message=FALSE}
+library(fars)
+```
+
+In the fars dataset numbers are used for states. We can find the correspondance with variable `state.name`
+
+```{r state}
+kable(data.frame(num=1:10,state=state.name[1:10]))
+```
+
+```{r }
+data2014 <- fars_read(make_filename(2014),fars_dir)
+data2014 %>% group_by(STATE) %>% summarize(n=n()) %>%     mutate(state_name=state.name[STATE]) %>% arrange(desc(n))
+    
+```
+
+Now we are using the `fars_map_state` function to display the localisation of accident in California in 2014. 
+We may notice that California correspond to state 6 instead of 5.
+
+```{r }
+library(ggplot2)
+fars_map_state(6,2013,fars_dir)
+```
+

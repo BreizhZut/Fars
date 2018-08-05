@@ -4,10 +4,12 @@
 \alias{fars_read}
 \title{Reads a Fatality Analysis Reporting System dataset}
 \usage{
-fars_read(filename)
+fars_read(filename,fars_path)
 }
 \arguments{
 \item{filename}{character string corresponding to the path of the file}
+
+\item{fars_path}{charcter string correspondinf to the directory contianing the fars data}
 }
 \value{
 data frame tbl

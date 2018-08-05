@@ -15,30 +15,45 @@ You can install fars from github with:
 devtools::install_github("BreizhZut/Fars")
 ```
 
-## Example
+Dependencies
+
+```{r depen_lib, message=FALSE}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(magrittr)
+library(maps)
+```
+
+Loading the library
+
+```{r lib, message=FALSE}
+library(fars)
+```
+
+## Example: reading a file
 
 In oder to work properly one need to check the data location.
 
 ```{r setdir}
-fars_dir = file.path("..","data")
+fars_dir = file.path("tests","data")
 list.files(fars_dir)
 ```
 
-File names are regenerated with a simple method
-
-```{r }
-file.path(fars_dir,"accident_2013.csv.bz2")
-```
+This packaque contains a function to build standard names
 
 ```{r filename}
-library(fars)
-file2013 <- make_filename(2013,path=fars_dir)
+file2013 <- make_filename(2013)
 file2013
 ```
 
-And then loaded
+The `fars_read` function reads the file, the optionnal argument `fars_path` unables the user to specify the directory cotainong the data.
 
 ```{r data}
-data2013 <- fars_read(file2013)
-head(data2013)
+library(knitr)
+data2013 <- fars_read(file2013,fars_path=fars_dir)
+kable(head(data2013))
 ```
+
+
+[![Build Status](https://travis-ci.org/BreizhZut/Fars.svg?branch=master)](https://travis-ci.org/BreizhZut/Fars)

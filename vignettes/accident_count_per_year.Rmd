@@ -1,6 +1,6 @@
 ---
 title: "Exploring the evolution of accidents per month accross multiple years"
-author: "D Tweed"
+author: "D. Tweed"
 date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
@@ -18,10 +18,10 @@ knitr::opts_chunk$set(
 
 ## Problem
 
-The FARS database is contained in mutltiple files, ne per year actually.
+The FARS database is contained in multiple files, one per year actually.
 
 ```{r setdir}
-fars_dir = file.path("..","..","data")
+fars_dir = file.path("..","tests","data")
 list.files(fars_dir)
 ```
 What we aim to do now is to count the number of incidents per month for this we need:
@@ -31,3 +31,68 @@ What we aim to do now is to count the number of incidents per month for this we 
 
 
 ## Fars package implementations
+
+Loading dependancies
+
+```{r depen_lib, message=FALSE}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(magrittr)
+library(maps)
+library(knitr)
+```
+
+Loading the library
+
+```{r lib, message=FALSE}
+library(fars)
+```
+
+```{r read_years}
+list_data <- fars_read_years(2012:2015,fars_path=fars_dir)
+```
+
+The warning indiate we have a missing file for which the output is `NULL`
+```{r r2012}
+list_data[[1]]
+```
+
+For the remaining entries 
+```{r r2013}
+kable(head(list_data[[2]]))
+```
+```{r r2014}
+kable(head(list_data[[3]]))
+```
+```{r r2015}
+kable(head(list_data[[4]]))
+```
+
+This function is used within the `fars_summarize_years` function that aggrage the data per month and year. 
+
+```{r year_sum}
+data_years <- fars_summarize_years(2013:2015,fars_dir)
+kable(data_years)
+```
+
+## Alternative grouping and plotting
+
+Finally we can display the result 
+
+```{r fig,fig.width=8,fig.height=4}
+library(ggplot2)
+
+data_years <- list_data %>% bind_rows() %>% 
+    select(month=MONTH,year=year) %>%
+    group_by(year, month) %>%
+    summarize(n = dplyr::n())
+
+ggplot(data_years,aes(x=month,y=n,color=as.factor(year))) +
+    geom_line() +
+    scale_colour_discrete(name  ="Year") +
+    scale_x_continuous(name="Month",breaks=1:12,labels=month.name) +
+    scale_y_continuous(name="Nb of accidents") +
+    theme_bw()+
+    theme(legend.justification=c(0,1),legend.position=c(0.05, 0.95))
+```

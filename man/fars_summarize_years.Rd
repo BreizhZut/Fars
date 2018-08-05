@@ -4,12 +4,12 @@
 \alias{fars_summarize_years}
 \title{Count the number of accidents per month}
 \usage{
-fars_summarize_years(years, path)
+fars_summarize_years(years,fars_path)
 }
 \arguments{
 \item{years}{a list of values corresponding to year}
 
-\item{path}{directory containing the Fars data set to "data" by default}
+\item{fars_path}{charcter string correspondinf to the directory containing the fars data}
 }
 \value{
 a data frame table with columns

@@ -4,12 +4,12 @@
 \alias{fars_read_years}
 \title{Read years from a list of Fatality Analysis Reporting System}
 \usage{
-fars_read_years(years,path)
+fars_read_years(years,fars_path)
 }
 \arguments{
 \item{years}{a list of values corresponding to year}
 
-\item{path}{directory containing the Fars data set to "data" by default}
+\item{fars_path}{charcter string correspondinf to the directory containing the fars data}
 }
 \value{
 a list of dat frame tbl with MONTH and year columns
