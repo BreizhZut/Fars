@@ -96,3 +96,5 @@ head(data2013)
     ## #   SCH_BUS <int>, RAIL <chr>, NOT_HOUR <int>, NOT_MIN <int>,
     ## #   ARR_HOUR <int>, ARR_MIN <int>, HOSP_HR <int>, HOSP_MN <int>,
     ## #   CF1 <int>, CF2 <int>, CF3 <int>, FATALS <int>, DRUNK_DR <int>
+
+https://travis-ci.org/BreizhZut/Fars.svg?branch=master
